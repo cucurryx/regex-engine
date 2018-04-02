@@ -4,30 +4,43 @@
 
 #include "nfa.h"
 
+#include <stack>
+
+NfaComponent *ConstructAny() {
+    auto *start = new NfaNode(true, false);
+    auto *end = new NfaNode(false, true);
+    auto *edge = new NfaEdge();
+    edge -> set();
+    start -> add_edge(edge);
+    edge -> set_next_node(end);
+    auto *component = new NfaComponent(start, end);
+    return component;
+}
+
 /**
  * s0 -- c --> |s1|
  */
 NfaComponent *ConstructAtom(char c) {
-    NfaNode *start = new NfaNode(true, false);
-    NfaNode *end = new NfaNode(false, true);
-    NfaEdge *edge = new NfaEdge();
+    auto *start = new NfaNode(true, false);
+    auto *end = new NfaNode(false, true);
+    auto *edge = new NfaEdge();
     edge -> set(c);
     start -> add_edge(edge);
     edge -> set_next_node(end);
 
-    NfaComponent *component = new NfaComponent(start, end);
+    auto *component = new NfaComponent(start, end);
     return component;
 }
 
 NfaComponent *ConstructAtom(char l, char h) {
-    NfaNode *start = new NfaNode(true, false);
-    NfaNode *end = new NfaNode(true, false);
-    NfaEdge *edge = new NfaEdge();
+    auto *start = new NfaNode(true, false);
+    auto *end = new NfaNode(true, false);
+    auto *edge = new NfaEdge();
     edge -> set_range(l, h);
     start -> add_edge(edge);
     edge -> set_next_node(end);
 
-    NfaComponent *component = new NfaComponent(start, end);
+    auto *component = new NfaComponent(start, end);
     return component;
 }
 
@@ -39,18 +52,28 @@ NfaComponent *ConstructAtom(char l, char h) {
  *     s3 -- b --> s4
  */
 NfaComponent *ConstructAlternate(NfaComponent *n1, NfaComponent *n2) {
-    NfaNode *n1_start = n1 -> start();
-    NfaNode *n1_end = n1 -> end();
-    NfaNode *n2_start  = n2 -> start();
-    NfaNode *n2_end = n2 -> end();
+    if (n1 && !n2) {
+        return n1;
+    }
+    if (n2 && !n1) {
+        return n2;
+    }
+    if (!n1) {
+        return nullptr;
+    }
 
-    NfaNode *new_start = new NfaNode(true, false);
-    NfaNode *new_end = new NfaNode(false, true);
+    auto *n1_start = n1 -> start();
+    auto *n1_end = n1 -> end();
+    auto *n2_start  = n2 -> start();
+    auto *n2_end = n2 -> end();
 
-    NfaEdge *edge1 = new NfaEdge();
-    NfaEdge *edge2 = new NfaEdge();
-    NfaEdge *edge3 = new NfaEdge();
-    NfaEdge *edge4 = new NfaEdge();
+    auto *new_start = new NfaNode(true, false);
+    auto *new_end = new NfaNode(false, true);
+
+    auto *edge1 = new NfaEdge();
+    auto *edge2 = new NfaEdge();
+    auto *edge3 = new NfaEdge();
+    auto *edge4 = new NfaEdge();
 
     new_start -> add_edge(edge1);
     new_start -> add_edge(edge2);
@@ -67,7 +90,7 @@ NfaComponent *ConstructAlternate(NfaComponent *n1, NfaComponent *n2) {
     n1_end -> set_end(false);
     n2_end -> set_end(false);
 
-    NfaComponent *component = new NfaComponent(new_start, new_end);
+    auto *component = new NfaComponent(new_start, new_end);
     return component;
 }
 
@@ -75,19 +98,29 @@ NfaComponent *ConstructAlternate(NfaComponent *n1, NfaComponent *n2) {
  * s0 -- a --> s1 -->  s2 -- b --> |s3|
  */
 NfaComponent *ConstructConcatenate(NfaComponent *n1, NfaComponent *n2) {
-    NfaNode *n1_start = n1 -> start();
-    NfaNode *n1_end = n1 -> end();
-    NfaNode *n2_start  = n2 -> start();
-    NfaNode *n2_end = n2 -> end();
+    if (n1 && !n2) {
+        return n1;
+    }
+    if (n2 && !n1) {
+        return n2;
+    }
+    if (!n1) {
+        return nullptr;
+    }
 
-    NfaEdge *edge = new NfaEdge();
+    auto *n1_start = n1 -> start();
+    auto *n1_end = n1 -> end();
+    auto *n2_start  = n2 -> start();
+    auto *n2_end = n2 -> end();
+
+    auto *edge = new NfaEdge();
     edge -> set_next_node(n2_start);
     n1_end -> add_edge(edge);
 
     n1_end -> set_end(false);
     n2_start -> set_begin(false);
 
-    NfaComponent *component = new NfaComponent(n1_start, n2_end);
+    auto *component = new NfaComponent(n1_start, n2_end);
     return component;
 }
 
@@ -101,16 +134,20 @@ NfaComponent *ConstructConcatenate(NfaComponent *n1, NfaComponent *n2) {
  *   -----------------------
  */
 NfaComponent *ConstructClosure(NfaComponent *n) {
-    NfaNode *n_start = n -> start();
-    NfaNode *n_end = n -> end();
+    if (n == nullptr) {
+        return nullptr;
+    }
 
-    NfaNode *new_start = new NfaNode(true, false);
-    NfaNode *new_end = new NfaNode(false, true);
+    auto *n_start = n -> start();
+    auto *n_end = n -> end();
 
-    NfaEdge *edge1 = new NfaEdge();
-    NfaEdge *edge2 = new NfaEdge();
-    NfaEdge *edge3 = new NfaEdge();
-    NfaEdge *edge4 = new NfaEdge();
+    auto *new_start = new NfaNode(true, false);
+    auto *new_end = new NfaNode(false, true);
+
+    auto *edge1 = new NfaEdge();
+    auto *edge2 = new NfaEdge();
+    auto *edge3 = new NfaEdge();
+    auto *edge4 = new NfaEdge();
 
     edge1 -> set_next_node(n_start);
     edge2 -> set_next_node(new_end);
@@ -125,11 +162,12 @@ NfaComponent *ConstructClosure(NfaComponent *n) {
     n_start -> set_begin(false);
     n_end -> set_end(false);
 
-    NfaComponent *component = new NfaComponent(new_start, new_end);
+    auto *component = new NfaComponent(new_start, new_end);
     return component;
 }
 
 /*-----------------------------------------------------------------------------------------------*/
+// TODO(make this functor more clean)
 bool NfaNode::match(std::string s) {
     bool res = false;
 
@@ -167,3 +205,5 @@ bool NfaNode::match(std::string s) {
     }
     return res;
 }
+
+/*-----------------------------------------------------------------------------------------------*/

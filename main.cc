@@ -1,16 +1,15 @@
 #include "nfa.h"
-
+#include "regex_parser.h"
 #include <iostream>
-
 #include <cassert>
 
 using namespace std;
 
 
 int main() {
-    NfaNode *node1 = new NfaNode();
-    NfaNode *node2 = new NfaNode();
-    NfaNode *node3 = new NfaNode();
+    auto *node1 = new NfaNode();
+    auto *node2 = new NfaNode();
+    auto *node3 = new NfaNode();
 
 
     node1 -> set_begin(true);
@@ -87,6 +86,10 @@ int main() {
     //edge -> set();
     //cout << edge -> is_in('x');3s09fuoab") << endl;
 
+    RegexParser parser;
+    Nfa *nfa = parser.ParseToNfa("(a|b)c*");
+    //nfa -> match("accccc");
+    //nfa -> match("aa");
 
     return 0;
 }

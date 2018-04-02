@@ -17,6 +17,7 @@
 class NfaEdge;
 class NfaNode;
 class NfaComponent;
+class NfaConstructor;
 class Nfa;
 
 /*-----------------------------------------------------------------------------------------------*/
@@ -27,7 +28,7 @@ class Nfa;
  */
 NfaComponent *ConstructAtom(char c);
 NfaComponent *ConstructAtom(char l, char h);
-
+NfaComponent *ConstructAny();
 /**
  * @brief trainsformation on NFAs that models the effects of each basic RE operator
  * @param n1
@@ -159,6 +160,7 @@ private:
     NfaNode *end_;
 };
 
+/*-----------------------------------------------------------------------------------------------*/
 class Nfa {
 public:
     Nfa(NfaComponent *component = nullptr):
