@@ -3,4 +3,4 @@ project(RegexEngine)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(RegexEngine main.cc nfa.cc regex_parser.cc test.cc)
+add_executable(RegexEngine main.cc nfa.cc regex_parser.cc test.cc graph_generator.h)

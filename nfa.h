@@ -97,15 +97,7 @@ public:
         return next_to_;
     }
 
-    std::string to_string() {
-        std::string s;
-        for (int i = 1; i <= CHAR_MAX; ++i) {
-            if (char_masks_[i]) {
-                s += char(i);
-            }
-        }
-        return s;
-    }
+    std::string to_string();
 
 private:
     CharMasks char_masks_;
@@ -147,6 +139,10 @@ public:
             }
         }
         return ss.str();
+    }
+
+    std::vector<NfaEdge*> edges() {
+        return edges_;
     }
     /**
      *

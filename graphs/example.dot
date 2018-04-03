@@ -1,0 +1,9 @@
+digraph example {
+	0 -> 1 [label="ϵ"]
+	0 -> 3 [label="ϵ"]
+	1 -> 2 [label="0-9"]
+	2 -> 1 [label="ϵ"]
+	2 -> 3 [label="ϵ"]
+	3 -> 4 [label="ϵ"]
+	4 -> 5 [label="a"]
+}

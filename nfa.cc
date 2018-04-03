@@ -6,6 +6,7 @@
 
 #include <stack>
 
+
 NfaComponent *ConstructAny() {
     auto *start = new NfaNode(true, false);
     auto *end = new NfaNode(false, true);
@@ -227,6 +228,38 @@ NfaComponent *ConstructMaybe(NfaComponent *n) {
 }
 
 /*-----------------------------------------------------------------------------------------------*/
+
+std::string NfaEdge::to_string() {
+    std::string s;
+    int beg = 0;
+    int end = 0;
+
+    for (int i = 1; i <= CHAR_MAX; ++i) {
+        if (char_masks_[i]) {
+            if (beg == 0) {
+                beg = i;
+                end = i;
+            }
+            ++end;
+        }
+        else {
+            if (beg != end) {
+                if (beg + 1 == end) {
+                    s += char(beg);
+                }
+                else {
+                    s += char(beg);
+                    s += "-";
+                    s += char(--end);
+                }
+                beg = 0;
+                end = 0;
+            }
+        }
+    }
+    return s;
+}
+
 // TODO(make this functor more clean)
 bool NfaNode::match(std::string s) {
     bool res = false;
