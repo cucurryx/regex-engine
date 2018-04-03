@@ -23,12 +23,10 @@ public:
         return nfa;
     }
 
-private:
+public:
     NfaComponent *ParseRegex(stringstream &regex_stream);
-    NfaComponent *ParseUnion(stringstream &regex_stream);
     NfaComponent *ParseSimpleRegex(stringstream &regex_stream);
     NfaComponent *ParseBasicRegex(stringstream &regex_stream);
-    NfaComponent *ParseConcatenate(stringstream &regex_stream);
     NfaComponent *ParseElementary(stringstream &regex_stream);
     NfaComponent *ParseGroup(stringstream &regex_stream);
     NfaComponent *ParseSet(stringstream &regex_stream);

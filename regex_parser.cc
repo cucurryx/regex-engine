@@ -5,94 +5,77 @@
 #include "regex_parser.h"
 
 /**
- * @brief  <RE> ::= <union> | <simple-RE>
+ * @brief  <RE>    ::= <simple-RE> | <union>
+ *         <union> ::= <simple-RE> "|" <simple-RE>
  * @param regex_stream
  * @return
  */
 NfaComponent *RegexParser::ParseRegex(stringstream &regex_stream){
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
     NfaComponent *result = nullptr;
-    result = ParseUnion(regex_stream);
-    if (result == nullptr) {
-        return ParseSimpleRegex(regex_stream);
-    }
-    return result;
-}
-
-/**
- * @brief  <union> ::= <RE> "|" <simple-RE>
- * @param regex_stream
- * @return
- */
-NfaComponent *RegexParser::ParseUnion(stringstream &regex_stream){
-    if (regex_stream.eof()) {
-        return nullptr;
-    }
-
-    NfaComponent *result = nullptr;
-    while(!regex_stream.eof()) {
-        NfaComponent *left = ParseRegex(regex_stream);
-        if (result && left) {
-            result = ConstructAlternate(left, result);
+    while (!regex_stream.eof()) {
+        NfaComponent *now = ParseSimpleRegex(regex_stream);
+        if (result && now) {
+            result = ConstructAlternate(result, now);
         }
-        else if(!result && left) {
-            result = left;
+        else if(!result && now) {
+            result = now;
         }
         else {
             return nullptr;
         }
 
         if (regex_stream.eof()) {
-            break;
+            return result;
         }
 
-        auto c = char(regex_stream.get());
-        if (c == '|') {
-            NfaComponent *right = ParseSimpleRegex(regex_stream);
-            result = ConstructAlternate(result, right);
+        auto c = regex_stream.peek();
+        if (char(c) == '|') {
+            regex_stream.get();
+        }
+        else if (char(c) == ')' || c == -1) {
+            return result;
+        }
+        else {
+            return nullptr;
+        }
+    }
+}
+
+/**
+ * @brief <simple-RE> ::= <basic-RE> | <basic-RE> <simple-RE>
+ * @param regex_stream
+ * @return
+ */
+NfaComponent *RegexParser::ParseSimpleRegex(stringstream &regex_stream) {
+    if (regex_stream.peek() == -1) {
+        return nullptr;
+    }
+
+    NfaComponent *result = nullptr;
+    while (!regex_stream.eof()) {
+        NfaComponent *now = ParseBasicRegex(regex_stream);
+        if (result && now) {
+            result = ConstructConcatenate(result, now);
+        } else if (!result && now) {
+            result = now;
+        } else {
+            return nullptr;
+        }
+
+        if (regex_stream.eof()) {
+            return result;
+        }
+
+        auto c = regex_stream.peek();
+        if (char(c) == '|' || char(c) == ')' || c == -1) {
+            // regex_stream.get();
             return result;
         }
     }
-    return result;
-}
-
-/**
- * @brief <concatenation> ::= <simpe-RE> | <basic-RE>
- * @param regex_stream
- * @return
- */
-NfaComponent *RegexParser::ParseConcatenate(stringstream &regex_stream){
-    if (regex_stream.eof()) {
-        return nullptr;
-    }
-
-    NfaComponent *result = nullptr;
-    result = ParseSimpleRegex(regex_stream);
-    if (!result) {
-        return ParseBasicRegex(regex_stream);
-    }
-    return result;
-}
-
-/**
- * @brief <simple-RE> ::= <concatenation> | <basic-RE>
- * @param regex_stream
- * @return
- */
-NfaComponent *RegexParser::ParseSimpleRegex(stringstream &regex_stream){
-    if (regex_stream.eof()) {
-        return nullptr;
-    }
-
-    NfaComponent *result = nullptr;
-    result = ParseConcatenate(regex_stream);
-    if (result == nullptr) {
-        return ParseBasicRegex(regex_stream);
-    }
-    return result;
 }
 
 /**
@@ -101,7 +84,7 @@ NfaComponent *RegexParser::ParseSimpleRegex(stringstream &regex_stream){
  * @return
  */
 NfaComponent *RegexParser::ParseBasicRegex(stringstream &regex_stream){
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
@@ -114,8 +97,10 @@ NfaComponent *RegexParser::ParseBasicRegex(stringstream &regex_stream){
             result = ConstructClosure(result);
         }
         else if (c == '+') {
-            NfaComponent *start = ConstructClosure(result);
-            result = ConstructConcatenate(result, start);
+            result = ConstructMoreOne(result);
+        }
+        else if (c == '?') {
+            result = ConstructMaybe(result);
         }
         else {
             regex_stream.unget();
@@ -130,31 +115,45 @@ NfaComponent *RegexParser::ParseBasicRegex(stringstream &regex_stream){
  * @return
  */
 NfaComponent *RegexParser::ParseElementary(stringstream &regex_stream) {
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
     NfaComponent *result = nullptr;
-    result = ParseGroup(regex_stream);
-    if (!result) {
-        return result;
-    }
-    result = ParseSet(regex_stream);
-    if (!result) {
-        return result;
-    }
+    auto c = regex_stream.peek();
 
-    if (!regex_stream.eof()) {
-        auto c = char(regex_stream.get());
-        if (c == '.') {
-            result = ConstructAny();
-            return result;
-        }
-        else {
+    if (char(c) == '(') {
+        result = ParseGroup(regex_stream);
+    }
+    else if (char(c) == '.') {
+        regex_stream.get();
+        result = ConstructAny();
+    }
+    else if (char(c) == '[') {
+        result = ParseSet(regex_stream);
+    }
+    else if (c == -1) {
+        result = nullptr;
+    }
+    else if (c == '\\') {
+        regex_stream.get();
+        c = char(regex_stream.peek());
+        if (c == '(' || c == '*' || c == ')' || c == '+' || c == '?' || c == '.' ||
+                c == '[' || c == ']' || c == '\\') {
+            regex_stream.get();
             result = ConstructAtom(c);
         }
-        return result;
+        else {
+            //TODO (other circumstances)
+            assert(false);
+        }
     }
+    else {
+        regex_stream.get();
+        result = ConstructAtom(c);
+    }
+
+    return result;
 }
 
 /**
@@ -163,20 +162,31 @@ NfaComponent *RegexParser::ParseElementary(stringstream &regex_stream) {
  * @return
  */
 NfaComponent *RegexParser::ParseGroup(stringstream &regex_stream){
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
     NfaComponent *result = nullptr;
-    auto c = char(regex_stream.get());
+    auto c = char(regex_stream.peek());
     if (c == '(') {
+        regex_stream.get();
         result = ParseRegex(regex_stream);
     }
-    c = char(regex_stream.get());
-    if (c == ')') {
-        return result;
+    else {
+        assert (false); // must be '(' here
     }
-    return nullptr;
+
+    if(!regex_stream.eof()) {
+        c = char(regex_stream.peek());
+        if (c == ')') {
+            regex_stream.get();
+            return result;
+        }
+        else {
+            return nullptr;
+        }
+    }
+    return result;
 }
 
 /**
@@ -186,7 +196,7 @@ NfaComponent *RegexParser::ParseGroup(stringstream &regex_stream){
  */
 // TODO (negative-set is implemented yet.)
 NfaComponent *RegexParser::ParseSet(stringstream &regex_stream){
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
@@ -195,13 +205,20 @@ NfaComponent *RegexParser::ParseSet(stringstream &regex_stream){
     if (c == '[') {
         result = ParseSetItems(regex_stream);
     }
-    if (!regex_stream.eof()) {
-        c = char(regex_stream.get());
-        if (c == ']') {
-            return result;
-        }
+    else {
+        regex_stream.unget();
+        return nullptr;
     }
-    return nullptr;
+    if (regex_stream.eof()) {
+        return result;
+    }
+    int x = regex_stream.get();
+    if (x == -1 || char(x) == ']') {
+        return result;
+    }
+    else {
+        return nullptr;
+    }
 }
 
 /**
@@ -210,33 +227,29 @@ NfaComponent *RegexParser::ParseSet(stringstream &regex_stream){
  * @return
  */
 NfaComponent *RegexParser::ParseSetItems(stringstream &regex_stream) {
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1) {
         return nullptr;
     }
 
     NfaComponent *result = nullptr;
-    while (!regex_stream.eof()) {
-        auto left = ParseSetItem(regex_stream);
-        if (left && result) {
-            result = ConstructConcatenate(left, result);
+    while (regex_stream.peek() != -1) {
+        auto current = ParseSetItem(regex_stream);
+
+        if (current && result) {
+            result = ConstructAlternate(result, current);
         }
-        else if (left && !result) {
-            result = left;
+        else if (current && !result) {
+            result = current;
         }
         else {
             return nullptr;
         }
 
-        if (regex_stream.eof()) {
-            return result;
-        }
-        auto c = char(regex_stream.get());
-        if (c == ']') {
-            regex_stream.unget();
+        auto c = regex_stream.peek();
+        if (c == -1 || char(c) == ']') {
             return result;
         }
     }
-    return result;
 }
 
 /**
@@ -245,23 +258,24 @@ NfaComponent *RegexParser::ParseSetItems(stringstream &regex_stream) {
  * @return
  */
 NfaComponent *RegexParser::ParseSetItem(stringstream &regex_stream) {
-    if (regex_stream.eof()) {
+    if (regex_stream.peek() == -1 || regex_stream.eof()) {
         return nullptr;
     }
 
     NfaComponent *result = nullptr;
     auto c = char(regex_stream.get());
-    if (!regex_stream.eof()) {
+    if (regex_stream.peek() != -1) {
         auto mid = char(regex_stream.get());
-        if (mid == '-' && !regex_stream.eof()) {
+        if (mid == '-' && regex_stream.peek() != -1) {
             auto e = char(regex_stream.get());
             result = ConstructAtom(c, e);
+            return result;
         }
         else {
             regex_stream.unget();
-            result = ConstructAtom(c);
         }
     }
+    result = ConstructAtom(c);
     return result;
 }
 

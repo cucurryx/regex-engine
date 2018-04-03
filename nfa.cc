@@ -34,7 +34,7 @@ NfaComponent *ConstructAtom(char c) {
 
 NfaComponent *ConstructAtom(char l, char h) {
     auto *start = new NfaNode(true, false);
-    auto *end = new NfaNode(true, false);
+    auto *end = new NfaNode(false, true);
     auto *edge = new NfaEdge();
     edge -> set_range(l, h);
     start -> add_edge(edge);
@@ -166,6 +166,66 @@ NfaComponent *ConstructClosure(NfaComponent *n) {
     return component;
 }
 
+NfaComponent *ConstructMoreOne(NfaComponent *n) {
+    if (n == nullptr) {
+        return nullptr;
+    }
+
+    auto *n_start = n -> start();
+    auto *n_end = n -> end();
+
+    auto *new_start = new NfaNode(true, false);
+    auto *new_end = new NfaNode(false, true);
+
+    auto *edge1 = new NfaEdge();
+    auto *edge2 = new NfaEdge();
+    auto *edge3 = new NfaEdge();
+
+    edge1 -> set_next_node(n_start);
+    edge2 -> set_next_node(new_end);
+    edge3 -> set_next_node(n_start);
+
+    new_start -> add_edge(edge1);
+    n_end -> add_edge(edge3);
+    n_end -> add_edge(edge2);
+
+    n_start -> set_begin(false);
+    n_end -> set_end(false);
+
+    auto *component = new NfaComponent(new_start, new_end);
+    return component;
+}
+
+NfaComponent *ConstructMaybe(NfaComponent *n) {
+    if (n == nullptr) {
+        return nullptr;
+    }
+
+    auto *n_start = n -> start();
+    auto *n_end = n -> end();
+
+    auto *new_start = new NfaNode(true, false);
+    auto *new_end = new NfaNode(false, true);
+
+    auto *edge1 = new NfaEdge();
+    auto *edge2 = new NfaEdge();
+    auto *edge3 = new NfaEdge();
+
+    edge1 -> set_next_node(n_start);
+    edge2 -> set_next_node(new_end);
+    edge3 -> set_next_node(new_end);
+
+    new_start -> add_edge(edge1);
+    n_end -> add_edge(edge2);
+    new_start -> add_edge(edge3);
+
+    n_start -> set_begin(false);
+    n_end -> set_end(false);
+
+    auto *component = new NfaComponent(new_start, new_end);
+    return component;
+}
+
 /*-----------------------------------------------------------------------------------------------*/
 // TODO(make this functor more clean)
 bool NfaNode::match(std::string s) {
@@ -190,16 +250,17 @@ bool NfaNode::match(std::string s) {
     s.erase(s.begin());
 
     for (auto edge : edges_) {
-        if (edge -> is_in(c)) {
-            auto next_node = edge -> next_node();
-            if (next_node != nullptr) {
-                res = next_node -> match(s) || res;
+        if (edge -> is_in(c) || edge -> is_epsilon()) {
+            std::string pre;
+            if (edge -> is_epsilon()) {
+                pre = std::string(1, c);
             }
-        }
-        else if (edge -> is_epsilon()) {
+            else {
+                pre = "";
+            }
             auto next_node = edge -> next_node();
             if (next_node != nullptr) {
-                res = next_node -> match(c+s) || res;
+                res = next_node -> match(pre+s) || res;
             }
         }
     }

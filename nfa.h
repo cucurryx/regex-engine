@@ -10,6 +10,7 @@
 
 #include <climits>
 #include <cassert>
+#include <sstream>
 
 /**
  * classes
@@ -29,6 +30,7 @@ class Nfa;
 NfaComponent *ConstructAtom(char c);
 NfaComponent *ConstructAtom(char l, char h);
 NfaComponent *ConstructAny();
+
 /**
  * @brief trainsformation on NFAs that models the effects of each basic RE operator
  * @param n1
@@ -38,7 +40,8 @@ NfaComponent *ConstructAny();
 NfaComponent *ConstructAlternate(NfaComponent *n1, NfaComponent *n2);
 NfaComponent *ConstructConcatenate(NfaComponent *n1, NfaComponent *n2);
 NfaComponent *ConstructClosure(NfaComponent *n);
-
+NfaComponent *ConstructMoreOne(NfaComponent *n);
+NfaComponent *ConstructMaybe(NfaComponent *n);
 /*-----------------------------------------------------------------------------------------------*/
 class NfaEdge {
 public:
@@ -93,6 +96,17 @@ public:
     NfaNode *next_node() {
         return next_to_;
     }
+
+    std::string to_string() {
+        std::string s;
+        for (int i = 1; i <= CHAR_MAX; ++i) {
+            if (char_masks_[i]) {
+                s += char(i);
+            }
+        }
+        return s;
+    }
+
 private:
     CharMasks char_masks_;
     NfaNode *next_to_ { nullptr };
@@ -124,6 +138,16 @@ public:
         return is_begin_;
     }
 
+    std::string to_string() {
+        std::stringstream ss;
+        for (auto edge : edges_) {
+            ss << edge -> to_string() << "|";
+            if (edge -> next_node()) {
+                ss << edge -> next_node() -> to_string();
+            }
+        }
+        return ss.str();
+    }
     /**
      *
      * @param s
@@ -155,6 +179,15 @@ public:
         return end_;
     }
 
+    std::string to_string() {
+        if (start_ == nullptr) {
+            return "None";
+        }
+        std::stringstream ss;
+        ss << start_ -> to_string();
+        return ss.str();
+    }
+
 private:
     NfaNode *start_;
     NfaNode *end_;
@@ -163,8 +196,9 @@ private:
 /*-----------------------------------------------------------------------------------------------*/
 class Nfa {
 public:
-    Nfa(NfaComponent *component = nullptr):
+    Nfa(NfaComponent *component):
         component_(component) {
+        assert(component != nullptr);
         begin_ = component -> start();
     }
 
@@ -179,9 +213,16 @@ public:
         return begin_;
     }
 
+    std::string to_string() {
+        if (component_ == nullptr) {
+            return "None";
+        }
+        return component_ -> to_string();
+    }
+
 private:
     NfaComponent *component_;
-    NfaNode *begin_;
+    NfaNode *begin_ {nullptr};
 };
 
 

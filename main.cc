@@ -1,5 +1,7 @@
 #include "nfa.h"
 #include "regex_parser.h"
+#include "test.h"
+
 #include <iostream>
 #include <cassert>
 
@@ -45,7 +47,7 @@ int main() {
     node2 -> add_edge(edge4);
     node2 -> add_edge(edge5);
 
-    NfaComponent *component1 = ConstructAtom('a');
+    NfaComponent *component1 = ConstructAtom('a', 'z');
     NfaComponent *component2 = ConstructAtom('b');
     NfaComponent *component3 = ConstructAtom('a');
     NfaComponent *component4 = ConstructAtom('b');
@@ -74,7 +76,7 @@ int main() {
     Nfa *nfa_closure = new Nfa(component_4);
     assert(nfa_closure -> match(""));
     assert(nfa_closure -> match("aaaaaaaaaaaaaaaaaa"));
-    assert(!nfa_closure -> match("abb"));
+    assert(nfa_closure -> match("abbfhjfjfzz"));
 
    // cout << nfa.match("rthrejhrejrhrehrey") << endl;
   //  cout << node1 -> is_begin() << endl;
@@ -86,10 +88,38 @@ int main() {
     //edge -> set();
     //cout << edge -> is_in('x');3s09fuoab") << endl;
 
-    RegexParser parser;
-    Nfa *nfa = parser.ParseToNfa("(a|b)c*");
+    //RegexParser parser;
+    //Nfa *nfa = parser.ParseToNfa("(a|b)c*");
     //nfa -> match("accccc");
     //nfa -> match("aa");
 
+    //regex_parser_test::TestParseSetItem();
+    //regex_parser_test::TestParseSetItems();
+    //regex_parser_test::TestParsePositiveSet();
+    //regex_parser_test::TestParseElementary();
+    //regex_parser_test::TestParseBasic();
+    //regex_parser_test::TestParseSimpleRegex();
+    //regex_parser_test::TestParseRegex();
+
+    const string pr = "xvvx-regex> ";
+    string regex;
+    string str;
+    RegexParser parser;
+
+
+    while (true) {
+        cout << pr;
+        cin >> regex;
+        Nfa *nfa = parser.ParseToNfa(regex);
+
+        cout << "string to match: ";
+        cin >> str;
+        if (nfa -> match(str)) {
+            cout << "match!\n";
+        }
+        else {
+            cout << "failed!\n";
+        }
+    }
     return 0;
 }
