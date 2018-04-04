@@ -71,6 +71,11 @@ NfaComponent *RegexParser::ParseSimpleRegex(stringstream &regex_stream) {
         }
 
         auto c = regex_stream.peek();
+
+        assert(char(c) != '*');
+        assert(char(c) != '+');
+        assert(char(c) != '?');
+
         if (char(c) == '|' || char(c) == ')' || c == -1) {
             // regex_stream.get();
             return result;

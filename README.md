@@ -18,14 +18,10 @@
 
 另外，为了更加直观地观察我们生成的自动机，借助于GraphViz工具，还实现了图形化NFA和DFA的功能。
 
-
-
----
 ## 编译环境
 
 编译器： gcc 7.2.0
 
----
 
 ## 使用说明
 建议在Linux环境下使用，或者使用Clion。
@@ -37,7 +33,6 @@
 
 GraphViz根据dot文件来生成图像，`.dot`文件保存在graph目录下，使用命令`dot <filename> -T png -o graphname.png`来生成`.png`格式的图像。
 
---- 
 
 ## 程序结构
 ```
@@ -74,7 +69,6 @@ parse部分参考了[这篇文章](http://www.cs.sfu.ca/~cameron/Teaching/384/99
 
 另外，`test/`中包含了对各个部分的测试。
 
----
 
 ## 示例
 ### Command-line
@@ -119,8 +113,6 @@ digraph example {
 最后在graphs目录下，可以看到我们生成的图像：
 
 ![example.png](graphs/example.png)
-
----
 
 ## TODO
 - [ ] 用内存池来管理内存，NFA结点直接从内存池获取内存。

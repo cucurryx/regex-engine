@@ -1,0 +1,3 @@
+digraph example2 {
+	0 -> 1 [label="a"]
+}

@@ -14,6 +14,7 @@ NfaComponent *ConstructAny() {
     edge -> set();
     start -> add_edge(edge);
     edge -> set_next_node(end);
+
     auto *component = new NfaComponent(start, end);
     return component;
 }
@@ -233,6 +234,14 @@ std::string NfaEdge::to_string() {
     std::string s;
     int beg = 0;
     int end = 0;
+
+    if (is_epsilon()) {
+        return "ϵ";
+    }
+    else if (char_masks_.all()) {
+        return "all";
+    }
+
 
     for (int i = 1; i <= CHAR_MAX; ++i) {
         if (char_masks_[i]) {

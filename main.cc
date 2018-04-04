@@ -10,8 +10,8 @@ using namespace std;
 
 void GraphGeneratorTest() {
     RegexParser parser;
-    Nfa *nfa = parser.ParseToNfa("([0-9]*)a");
-    graph_generator::GenerateGraph("graph/example", nfa);
+    Nfa *nfa = parser.ParseToNfa(".*");
+    graph_generator::GenerateGraph("example3", nfa);
 }
 
 void RegexMatchTest() {
@@ -20,7 +20,7 @@ void RegexMatchTest() {
     string regex;
     string str;
 
-    while (true) {
+    while (regex != "**quit**") {
         cout << pr;
         cin >> regex;
         Nfa *nfa = parser.ParseToNfa(regex);
@@ -37,7 +37,7 @@ void RegexMatchTest() {
 }
 
 int main() {
-    //GraphGeneratorTest();
-    RegexMatchTest();
+    GraphGeneratorTest();
+//    RegexMatchTest();
     return 0;
 }
