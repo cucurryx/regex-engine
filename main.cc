@@ -52,8 +52,8 @@ int main() {
     Nfa *nfa2 = parser.ParseToNfa("a|b|c*");
     Nfa *nfa3 = parser.ParseToNfa("a*");
 
-    graph_generator::GenerateGraph("test1", nfa1);
-    graph_generator::GenerateGraph("test2", nfa2);
+    graph_generator::GenerateGraph("example1", nfa1);
+    graph_generator::GenerateGraph("example", nfa2);
     graph_generator::GenerateGraph("test3", nfa3);
 
     Dfa *dfa1 = parser.ParseToDfa("abc");
@@ -61,7 +61,7 @@ int main() {
     Dfa *dfa3 = parser.ParseToDfa("a*");
 
     graph_generator::GenerateGraph("test1", dfa1);
-    graph_generator::GenerateGraph("test2", dfa2);
+    graph_generator::GenerateGraph("example", dfa2);
    // cout << CollectNodes(dfa3).size() << endl;
     //graph_generator::GenerateGraph("test3", dfa3);
 

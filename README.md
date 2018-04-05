@@ -89,30 +89,52 @@ match!
 ```
     //接口调用部分
     RegexParser parser;
-    Nfa *nfa = parser.ParseToNfa("([0-9]*)a");
+    Nfa *nfa = parser.ParseToNfa("a|b|c*");
     graph_generator::GenerateGraph("example", nfa);
 ```
 生成的`.dot`文件：
 ```
-➜  RegexEngine git:(master) ✗ cat graphs/example.dot 
+ccat graphs/example_nfa.dot
 digraph example {
-	0 -> 1 [label="ϵ"]
-	0 -> 3 [label="ϵ"]
-	1 -> 2 [label="0-9"]
-	2 -> 1 [label="ϵ"]
-	2 -> 3 [label="ϵ"]
-	3 -> 4 [label="ϵ"]
-	4 -> 5 [label="a"]
-}%     
+    shape0 [label="0", shape=circle];
+    shape1 [label="1", shape=circle];
+    shape2 [label="2", shape=circle];
+    shape3 [label="3", shape=circle];
+    shape4 [label="4", shape=circle];
+    shape5 [label="5", shape=doublecircle];
+    shape6 [label="6", shape=circle];
+    shape7 [label="7", shape=circle];
+    shape8 [label="8", shape=circle];
+    shape9 [label="9", shape=circle];
+    shape10 [label="10", shape=circle];
+    shape11 [label="11", shape=circle];
+
+
+    shape0 -> shape1 [label="ϵ"]
+    shape0 -> shape8 [label="ϵ"]
+    shape1 -> shape2 [label="ϵ"]
+    shape1 -> shape6 [label="ϵ"]
+    shape2 -> shape3 [label="a"]
+    shape3 -> shape4 [label="ϵ"]
+    shape4 -> shape5 [label="ϵ"]
+    shape6 -> shape7 [label="b"]
+    shape7 -> shape4 [label="ϵ"]
+    shape8 -> shape9 [label="ϵ"]
+    shape8 -> shape11 [label="ϵ"]
+    shape9 -> shape10 [label="c"]
+    shape10 -> shape9 [label="ϵ"]
+    shape10 -> shape11 [label="ϵ"]
+    shape11 -> shape5 [label="ϵ"]
+}
 ```
 然后在shell中使用GraphViz工具：
 ```
- dot graphs/example.dot -Tpng -o graphs/example.png
+ dot graphs/example.dot -Tpng -o graphs/example_nfa.png
 ```
 
 最后在graphs目录下，可以看到我们生成的图像：
 
-![example.png](graphs/example.png)
+![example_nfa.png](graphs/example_nfa.png)
 
 ## TODO
 - [ ] 用内存池来管理内存，NFA结点直接从内存池获取内存。

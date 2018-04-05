@@ -1,0 +1,31 @@
+digraph example {
+	shape0 [label="0", shape=circle];
+	shape1 [label="1", shape=circle];
+	shape2 [label="2", shape=circle];
+	shape3 [label="3", shape=circle];
+	shape4 [label="4", shape=circle];
+	shape5 [label="5", shape=doublecircle];
+	shape6 [label="6", shape=circle];
+	shape7 [label="7", shape=circle];
+	shape8 [label="8", shape=circle];
+	shape9 [label="9", shape=circle];
+	shape10 [label="10", shape=circle];
+	shape11 [label="11", shape=circle];
+
+
+	shape0 -> shape1 [label="ϵ"]
+	shape0 -> shape8 [label="ϵ"]
+	shape1 -> shape2 [label="ϵ"]
+	shape1 -> shape6 [label="ϵ"]
+	shape2 -> shape3 [label="a"]
+	shape3 -> shape4 [label="ϵ"]
+	shape4 -> shape5 [label="ϵ"]
+	shape6 -> shape7 [label="b"]
+	shape7 -> shape4 [label="ϵ"]
+	shape8 -> shape9 [label="ϵ"]
+	shape8 -> shape11 [label="ϵ"]
+	shape9 -> shape10 [label="c"]
+	shape10 -> shape9 [label="ϵ"]
+	shape10 -> shape11 [label="ϵ"]
+	shape11 -> shape5 [label="ϵ"]
+}
