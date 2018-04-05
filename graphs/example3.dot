@@ -1,7 +1,0 @@
-digraph example3 {
-	0 -> 1 [label="ϵ"]
-	0 -> 3 [label="ϵ"]
-	1 -> 2 [label="all"]
-	2 -> 1 [label="ϵ"]
-	2 -> 3 [label="ϵ"]
-}

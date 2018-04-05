@@ -5,10 +5,11 @@
 #ifndef REGEXENGINE_PARSER_H
 #define REGEXENGINE_PARSER_H
 
-#include "nfa.h"
 
 #include <sstream>
-#include <sstream>
+
+#include "nfa.h"
+#include "dfa.h"
 
 using std::string;
 using std::stringstream;
@@ -22,6 +23,14 @@ public:
         Nfa *nfa = new Nfa(component);
         return nfa;
     }
+
+    Dfa *ParseToDfa(const string &regex) {
+        auto nfa = ParseToNfa(regex);
+        auto beg_node = dfa_constructor::ConvertNfaToDfa(nfa);
+        auto dfa = new Dfa(beg_node);
+        return dfa;
+    }
+
 
 public:
     NfaComponent *ParseRegex(stringstream &regex_stream);

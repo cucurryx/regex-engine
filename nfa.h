@@ -42,6 +42,8 @@ NfaComponent *ConstructConcatenate(NfaComponent *n1, NfaComponent *n2);
 NfaComponent *ConstructClosure(NfaComponent *n);
 NfaComponent *ConstructMoreOne(NfaComponent *n);
 NfaComponent *ConstructMaybe(NfaComponent *n);
+
+std::vector<NfaNode*> CollectNodes(Nfa *nfa);
 /*-----------------------------------------------------------------------------------------------*/
 class NfaEdge {
 public:
@@ -97,6 +99,10 @@ public:
         return next_to_;
     }
 
+    CharMasks char_masks() {
+        return char_masks_;
+    }
+
     std::string to_string();
 
 private:
@@ -144,12 +150,11 @@ public:
     std::vector<NfaEdge*> edges() {
         return edges_;
     }
+
     /**
-     *
      * @param s
      * @return
      */
-    // TODO (this function is to ugly)
     bool match(std::string s);
 
 private:

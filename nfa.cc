@@ -5,7 +5,7 @@
 #include "nfa.h"
 
 #include <stack>
-
+#include <algorithm>
 
 NfaComponent *ConstructAny() {
     auto *start = new NfaNode(true, false);
@@ -228,6 +228,35 @@ NfaComponent *ConstructMaybe(NfaComponent *n) {
     return component;
 }
 
+void CollectNodes(NfaNode *nfa_node, std::vector<NfaNode*> &nodes) {
+    if (nfa_node == nullptr) {
+        return ;
+    }
+
+    auto beg = nodes.begin();
+    auto end = nodes.end();
+    if (std::find(beg, end, nfa_node) == nodes.end()) {
+        nodes.push_back(nfa_node);
+    }
+    else {
+        return ;
+    }
+
+    for (auto each_edge : nfa_node->edges()) {
+        auto next_node = each_edge -> next_node();
+        CollectNodes(next_node, nodes);
+    }
+}
+
+std::vector<NfaNode*> CollectNodes(Nfa *nfa) {
+    if (nfa == nullptr) {
+        return std::vector<NfaNode*>();
+    }
+    auto begin = nfa -> begin();
+    std::vector<NfaNode*> nodes;
+    CollectNodes(begin, nodes);
+    return nodes;
+}
 /*-----------------------------------------------------------------------------------------------*/
 
 std::string NfaEdge::to_string() {

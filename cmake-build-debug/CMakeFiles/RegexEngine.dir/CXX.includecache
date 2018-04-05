@@ -6,6 +6,26 @@
 
 #IncludeRegexTransform: 
 
+/home/xvvx/code/RegexEngine/dfa.cc
+dfa.h
+/home/xvvx/code/RegexEngine/dfa.h
+algorithm
+-
+queue
+-
+set
+-
+map
+-
+
+/home/xvvx/code/RegexEngine/dfa.h
+unordered_map
+-
+vector
+-
+nfa.h
+/home/xvvx/code/RegexEngine/nfa.h
+
 /home/xvvx/code/RegexEngine/graph_generator.h
 vector
 -
@@ -21,23 +41,25 @@ nfa.h
 /home/xvvx/code/RegexEngine/nfa.h
 
 /home/xvvx/code/RegexEngine/main.cc
-nfa.h
-/home/xvvx/code/RegexEngine/nfa.h
-regex_parser.h
-/home/xvvx/code/RegexEngine/regex_parser.h
-graph_generator.h
-/home/xvvx/code/RegexEngine/graph_generator.h
-test.h
-/home/xvvx/code/RegexEngine/test.h
 iostream
 -
 cassert
 -
+nfa.h
+/home/xvvx/code/RegexEngine/nfa.h
+dfa.h
+/home/xvvx/code/RegexEngine/dfa.h
+regex_parser.h
+/home/xvvx/code/RegexEngine/regex_parser.h
+graph_generator.h
+/home/xvvx/code/RegexEngine/graph_generator.h
 
 /home/xvvx/code/RegexEngine/nfa.cc
 nfa.h
 /home/xvvx/code/RegexEngine/nfa.h
 stack
+-
+algorithm
 -
 
 /home/xvvx/code/RegexEngine/nfa.h
@@ -57,18 +79,18 @@ regex_parser.h
 /home/xvvx/code/RegexEngine/regex_parser.h
 
 /home/xvvx/code/RegexEngine/regex_parser.h
+sstream
+-
 nfa.h
 /home/xvvx/code/RegexEngine/nfa.h
-sstream
--
-sstream
--
+dfa.h
+/home/xvvx/code/RegexEngine/dfa.h
 
 /home/xvvx/code/RegexEngine/test.cc
-
-/home/xvvx/code/RegexEngine/test.h
-regex_parser.h
-/home/xvvx/code/RegexEngine/regex_parser.h
 functional
 -
+regex_parser.h
+/home/xvvx/code/RegexEngine/regex_parser.h
+dfa.h
+/home/xvvx/code/RegexEngine/dfa.h
 
