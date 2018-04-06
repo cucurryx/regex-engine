@@ -48,26 +48,25 @@ int main() {
 
     RegexParser parser;
 
-    Nfa *nfa1 = parser.ParseToNfa("abc");
+    Nfa *nfa1 = parser.ParseToNfa("[a-zA-Z0-9]*abc");
     Nfa *nfa2 = parser.ParseToNfa("a|b|c*");
     Nfa *nfa3 = parser.ParseToNfa("a*");
 
-    graph_generator::GenerateGraph("example1", nfa1);
-    graph_generator::GenerateGraph("example", nfa2);
+    graph_generator::GenerateGraph("test1", nfa1);
+    graph_generator::GenerateGraph("test2", nfa2);
     graph_generator::GenerateGraph("test3", nfa3);
 
-    Dfa *dfa1 = parser.ParseToDfa("abc");
+    Dfa *dfa1 = parser.ParseToDfa("[a-zA-Z0-9]*abc");
     Dfa *dfa2 = parser.ParseToDfa("a|b|c");
-    Dfa *dfa3 = parser.ParseToDfa("a*");
+    Dfa *dfa3 = parser.ParseToDfa("(.*)*");
 
     graph_generator::GenerateGraph("test1", dfa1);
-    graph_generator::GenerateGraph("example", dfa2);
-   // cout << CollectNodes(dfa3).size() << endl;
-    //graph_generator::GenerateGraph("test3", dfa3);
+    graph_generator::GenerateGraph("test2", dfa2);
+    graph_generator::GenerateGraph("test3", dfa3);
 
     cout << dfa1 -> match("abc") << endl;
     cout << dfa2 -> match("b") << endl;
-    //cout << dfa3 -> match("a") << endl;
+    cout << dfa3 -> match("a") << endl;
 
     return 0;
 }

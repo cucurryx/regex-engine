@@ -9,7 +9,16 @@
 #include <set>
 #include <map>
 
+/*-----------------------------------------------------------------------------------------------*/
+/**
+ * namespace dfa_constructor
+ */
 
+/**
+ * @brief Use subset construction to convert a nfa to dfa
+ * @param nfa
+ * @return
+ */
 DfaNode *dfa_constructor::ConvertNfaToDfa(Nfa *nfa) {
     assert(nfa != nullptr);
 
@@ -53,6 +62,99 @@ DfaNode *dfa_constructor::ConvertNfaToDfa(Nfa *nfa) {
     return begin_node;
 }
 
+/**
+ * @brief Use Hopcroft Algorithm to minimize a dfa
+ * @param dfa
+ * @return
+ */
+Dfa *dfa_constructor::MinimizeDfa(Dfa *dfa) {
+    assert (dfa != nullptr);
+
+    auto all_nodes = CollectNodes(dfa);
+    set<DfaNode*> terminal_nodes;
+    set<DfaNode*> nonterminal_nodes;
+    for (auto each_node : all_nodes) {
+        if (each_node -> is_end()) {
+            terminal_nodes.insert(each_node);
+        }
+        else {
+            nonterminal_nodes.insert(each_node);
+        }
+    }
+
+    set<set<DfaNode*>> set_t{ terminal_nodes, nonterminal_nodes };
+    set<set<DfaNode*>> set_p;
+
+    while (set_p != set_t) {
+        set_p = set_t;
+        set_t = set<set<DfaNode*>>();
+
+        // T = T union Split(p)
+        for (auto each_set : set_p) {
+            auto each_set_split = Split(set_p, each_set);
+            for (const auto &each : each_set_split) {
+                set_t.insert(each);
+            }
+        }
+    }
+
+    auto dfa_begin = ConstructDfaFromSet(set_p);
+    auto minimal_dfa = new Dfa(dfa_begin);
+    return minimal_dfa;
+}
+
+set<set<DfaNode*>>
+dfa_constructor::Split(const set<set<DfaNode*>> &node_set, set<DfaNode*> &nodes) {
+    set<set<DfaNode*>> result;
+    std::map<char, set<DfaNode*>> char_set_map;
+    for (char c = 0; c != CHAR_MAX; ++c) {
+        result = Split(c, node_set, nodes);
+        if (result.size() > 1) {
+            return result;
+        }
+    }
+    return result;
+}
+
+set<set<DfaNode*>> dfa_constructor::Split(char c, const set<set<DfaNode*>> &node_set,
+                                          set<DfaNode*> &nodes) {
+    auto set_num = node_set.size();
+    vector<set<DfaNode*>> next_set(set_num, set<DfaNode*>());
+    int count = 0;
+    auto iter = nodes.begin();
+    while (iter != nodes.end()) {
+        auto node = *iter;
+        auto edges = node -> edges();
+        auto next_node = node;
+        auto edge_iter= edges.find(c);
+        if (edge_iter != edges.end()) {
+            next_node = edge_iter -> second;
+        }
+
+        auto node_set_iter= node_set.begin();
+        for (int i = 0; i != set_num; ++i) {
+            if (node_set_iter -> find(next_node) != node_set_iter -> end()) {
+                next_set[i].insert(node);
+            }
+            ++node_set_iter;
+        }
+        ++iter;
+    }
+
+    set<set<DfaNode*>> result;
+    for (const auto &each : next_set) {
+        if (!each.empty()) {
+            result.insert(each);
+        }
+    }
+    return result;
+}
+
+DfaNode *dfa_constructor::ConstructDfaFromSet(const set<set<DfaNode *>> &node_set) {
+    //TODO
+    return nullptr;
+}
+
 vector<NfaNode*> dfa_constructor::EpsilonClosure(NfaNode *node) {
     vector<NfaNode*> result;
     EpsilonClosure_(node, result);
@@ -69,6 +171,7 @@ vector<NfaNode*> dfa_constructor::EpsilonClosure(vector<NfaNode*> nodes) {
 
 vector<NfaNode*> dfa_constructor::MoveFromNode(NfaNode *node, char a) {
     vector<NfaNode*> result;
+
     for (auto each_edge : node -> edges()) {
         if (each_edge -> is_in(a)) {
             auto beg = result.begin();
@@ -129,7 +232,12 @@ bool dfa_constructor::ExistEndNode(const vector<NfaNode*> &nodes) {
     return result;
 }
 
+
+
 /*-----------------------------------------------------------------------------------------------*/
+/**
+ * tool functions
+ */
 
 vector<DfaNode*> CollectNodes(Dfa *dfa) {
     vector<DfaNode*> nodes;
@@ -150,7 +258,10 @@ void CollectNodes(DfaNode *node, vector<DfaNode*> &nodes) {
     auto edges = node -> edges();
     auto iter = edges.begin();
     while (iter != edges.end()) {
-        CollectNodes(iter->second, nodes);
+        auto node = iter -> second;
+        if (find(nodes.begin(), nodes.end(), node) == nodes.end()) {
+            CollectNodes(iter->second, nodes);
+        }
         ++iter;
     }
 }

@@ -5,14 +5,15 @@
 #ifndef REGEXENGINE_DFA_H
 #define REGEXENGINE_DFA_H
 
-#include <unordered_map>
+#include  <unordered_map>
 #include <vector>
+#include <set>
 
 #include "nfa.h"
 
 using std::unordered_map;
 using std::vector;
-
+using std::set;
 /**
  * pre-declaration of classes
  */
@@ -26,8 +27,13 @@ namespace dfa_constructor {
     vector<NfaNode*> MoveFromNode(NfaNode *node, char a);
     vector<NfaNode*> MoveFromNode(vector<NfaNode*> nodes, char a);
     void EpsilonClosure_(NfaNode *node, vector<NfaNode*> &result);
-    DfaNode *ConvertNfaToDfa(Nfa *nfa);
+    DfaNode *ConvertNfaToDfa(Nfa *nfa)
+    DfaNode *ConstructDfaFromSet(const set<set<DfaNode*>> &node_set);
+    Dfa *MinimizeDfa(Dfa *dfa);
+    set<set<DfaNode*>> Split(const set<set<DfaNode*>> &node_set, set<DfaNode*> &nodes);
+    set<set<DfaNode*>> Split(char c, const set<set<DfaNode*>> &node_set, set<DfaNode*> &nodes);
     NfaEdge::CharMasks CollectEdgesCharMasks(const vector<NfaNode*> &nodes);
+    bool CharCanSplitSet(char c, const set<set<DfaNode*>> &node_set, const set<DfaNode*> &nodes);
     bool ExistEndNode(const vector<NfaNode*> &nodes);
 }
 
@@ -72,8 +78,8 @@ public:
         }
         auto c = regex.front();
         std::string tail = std::string(regex.begin()+1, regex.end());
-        if (edges_.count(c) != 0) {
-            return edges_[c] -> match(regex);
+        if (edges_.find(c) != edges_.end()) {
+            return edges_[c] -> match(tail);
         }
         else {
             return false;

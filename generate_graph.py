@@ -9,5 +9,6 @@ def main():
     filenames = get_filenames()
     for each in filenames:
         os.system('dot graphs/' + each + ' -T png -o graphs/' + each[0:-4] + '.png')
+    os.system('rm -rf graphs/*.dot')
 
 main()

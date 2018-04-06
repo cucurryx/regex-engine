@@ -136,6 +136,9 @@ digraph example {
 
 ![example_nfa.png](graphs/example_nfa.png)
 
+通过子集构造算法得到的DFA图像：
+![example_dfa.png](graphs/example_dfa.png)
+
 ## TODO
 - [ ] 用内存池来管理内存，NFA结点直接从内存池获取内存。
 - [ ] 支持正向预查、反向预查、匿名捕获、命名捕获、边界和非贪婪重复等扩展正则表达式的功能。
