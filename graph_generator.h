@@ -22,7 +22,7 @@ using std::map;
 namespace graph_generator {
 
     void WriteToFile(const string &graphname, const vector<NfaNode*> &nodes) {
-        string path = "./graphs/" + graphname + "_nfa.dot";
+        string path = "../graphs/" + graphname + "_nfa.dot";
         FILE *fp = fopen(path.c_str(), "wt+");
 
         unordered_map<NfaNode*, int> node_index_map;
@@ -101,7 +101,7 @@ namespace graph_generator {
     }
 
     void WriteToFile(const string &graphname, const vector<DfaNode*> &nodes) {
-        string path = "./graphs/" + graphname + "_dfa.dot";
+        string path = "../graphs/" + graphname + "_dfa.dot";
         FILE *fp = fopen(path.c_str(), "wt+");
 
         unordered_map<DfaNode*, int> node_index_map;

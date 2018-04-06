@@ -24,8 +24,7 @@
 
 
 ## 使用说明
-建议在Linux环境下使用，或者使用Clion。
-在主目录下使用`make`来直接编译，然后运行`regex-engine`。或者使用IDE来 import project。 输入正则表达式，然后输入字符串判断是否匹配。
+建议在Linux环境下使用，用IDE来 import project。 输入正则表达式，然后输入字符串判断是否匹配。
 
 对于输入的每个正则表达式，都会生成对应的图保存在graph目录下，但是只是`.dot`文件，需要使用GraphViz工具来生成图像。
 

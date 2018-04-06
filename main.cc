@@ -44,7 +44,7 @@ void RegexMatchTest() {
         Dfa *dfa = new Dfa(dfa_constructor::ConvertNfaToDfa(nfa));
 
         graph_generator::GenerateGraph(regex, nfa);
-        graph_generator::GenerateGraph(regex, dfa);
+        graph_generator::GenerateGraph(regex+"_dfa", dfa);
 
         cout << "string to match: ";
         cin >> str;
@@ -56,7 +56,7 @@ void RegexMatchTest() {
         }
     }
 
-    system("python ./generate_graph.py");
+    system("python ../generate_graph.py");
 }
 
 int main() {
