@@ -1,4 +1,0 @@
-/home/xvvx/CLion-2017.3.4/clion-2017.3.4/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/xvvx/code/RegexEngine
--- Configuring done
--- Generating done
--- Build files have been written to: /home/xvvx/code/RegexEngine/cmake-build-debug
