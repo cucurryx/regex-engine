@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <cstdlib>
 
 #include "nfa.h"
 #include "dfa.h"
@@ -26,10 +27,24 @@ void RegexMatchTest() {
     string regex;
     string str;
 
-    while (regex != "**quit**") {
+    cout << "\t\tWelecom!\n\t\tInput a regular expression and we will generate the nfa graph and dfa graph"
+            "for you(int /graphs). \n\t\tThen you can input a string and we will match it for you.\n"
+            "\t\tinput **quit** to quit."
+         << endl;
+
+    while (true) {
         cout << pr;
         cin >> regex;
+
+        if (regex == "**quit**") {
+            break;
+        }
+
         Nfa *nfa = parser.ParseToNfa(regex);
+        Dfa *dfa = new Dfa(dfa_constructor::ConvertNfaToDfa(nfa));
+
+        graph_generator::GenerateGraph(regex, nfa);
+        graph_generator::GenerateGraph(regex, dfa);
 
         cout << "string to match: ";
         cin >> str;
@@ -40,33 +55,12 @@ void RegexMatchTest() {
             cout << "failed!\n";
         }
     }
+
+    system("python ./generate_graph.py");
 }
 
 int main() {
- //   GraphGeneratorTest();
-//    RegexMatchTest();
-
-    RegexParser parser;
-
-    Nfa *nfa1 = parser.ParseToNfa("[a-zA-Z0-9]*abc");
-    Nfa *nfa2 = parser.ParseToNfa("a|b|c*");
-    Nfa *nfa3 = parser.ParseToNfa("a*");
-
-    graph_generator::GenerateGraph("test1", nfa1);
-    graph_generator::GenerateGraph("test2", nfa2);
-    graph_generator::GenerateGraph("test3", nfa3);
-
-    Dfa *dfa1 = parser.ParseToDfa("[a-zA-Z0-9]*abc");
-    Dfa *dfa2 = parser.ParseToDfa("a|b|c");
-    Dfa *dfa3 = parser.ParseToDfa("(.*)*");
-
-    graph_generator::GenerateGraph("test1", dfa1);
-    graph_generator::GenerateGraph("test2", dfa2);
-    graph_generator::GenerateGraph("test3", dfa3);
-
-    cout << dfa1 -> match("abc") << endl;
-    cout << dfa2 -> match("b") << endl;
-    cout << dfa3 -> match("a") << endl;
-
+   // GraphGeneratorTest();
+    RegexMatchTest();
     return 0;
 }

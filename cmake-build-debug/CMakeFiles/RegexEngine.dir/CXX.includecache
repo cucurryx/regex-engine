@@ -23,6 +23,8 @@ unordered_map
 -
 vector
 -
+set
+-
 nfa.h
 /home/xvvx/code/RegexEngine/nfa.h
 
@@ -32,6 +34,8 @@ vector
 algorithm
 -
 unordered_map
+-
+map
 -
 cstdlib
 -
@@ -44,6 +48,8 @@ nfa.h
 iostream
 -
 cassert
+-
+cstdlib
 -
 nfa.h
 /home/xvvx/code/RegexEngine/nfa.h

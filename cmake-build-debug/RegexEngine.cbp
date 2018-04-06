@@ -111,9 +111,6 @@
 		<Unit filename="/home/xvvx/code/RegexEngine/test.cc">
 			<Option target="RegexEngine"/>
 		</Unit>
-		<Unit filename="/home/xvvx/code/RegexEngine/test.h">
-			<Option target="RegexEngine"/>
-		</Unit>
 		<Unit filename="/home/xvvx/code/RegexEngine/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

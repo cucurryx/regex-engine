@@ -27,13 +27,12 @@ namespace dfa_constructor {
     vector<NfaNode*> MoveFromNode(NfaNode *node, char a);
     vector<NfaNode*> MoveFromNode(vector<NfaNode*> nodes, char a);
     void EpsilonClosure_(NfaNode *node, vector<NfaNode*> &result);
-    DfaNode *ConvertNfaToDfa(Nfa *nfa)
+    DfaNode *ConvertNfaToDfa(Nfa *nfa);
     DfaNode *ConstructDfaFromSet(const set<set<DfaNode*>> &node_set);
     Dfa *MinimizeDfa(Dfa *dfa);
     set<set<DfaNode*>> Split(const set<set<DfaNode*>> &node_set, set<DfaNode*> &nodes);
     set<set<DfaNode*>> Split(char c, const set<set<DfaNode*>> &node_set, set<DfaNode*> &nodes);
     NfaEdge::CharMasks CollectEdgesCharMasks(const vector<NfaNode*> &nodes);
-    bool CharCanSplitSet(char c, const set<set<DfaNode*>> &node_set, const set<DfaNode*> &nodes);
     bool ExistEndNode(const vector<NfaNode*> &nodes);
 }
 
