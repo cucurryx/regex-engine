@@ -27,6 +27,7 @@
 - gcc安装: sudo apt-get install gcc
 - make安装: sudo apt-get install make
 - graphviz安装: sudo apt-get install graphviz
+- google-test安装: [参见文档](https://github.com/google/googletest)
 
 ## 使用说明
 建议在Linux环境下使用，`make test`编译测试文件，`./test`运行测试。`make regex_engine`编译正则引擎，`./regex_engine`运行，输入正则表达式，然后输入字符串判断是否匹配。
