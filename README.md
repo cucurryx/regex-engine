@@ -21,10 +21,15 @@
 ## 编译环境
 
 编译器： gcc 7.2.0
+        GNU Make 4.1 Built for x86_64-pc-linux-gnu
 
+## 依赖安装(ubuntu)
+- gcc安装: sudo apt-get install gcc
+- make安装: sudo apt-get install make
+- graphviz安装: sudo apt-get install graphviz
 
 ## 使用说明
-建议在Linux环境下使用，用IDE来 import project。 输入正则表达式，然后输入字符串判断是否匹配。
+建议在Linux环境下使用，`make test`编译测试文件，`./test`运行测试。`make regex_engine`编译正则引擎，`./regex_engine`运行，输入正则表达式，然后输入字符串判断是否匹配。
 
 对于输入的每个正则表达式，都会生成对应的图保存在graph目录下，但是只是`.dot`文件，需要使用GraphViz工具来生成图像。
 
@@ -32,6 +37,7 @@
 
 GraphViz根据dot文件来生成图像，`.dot`文件保存在graph目录下，使用命令`dot <filename> -T png -o graphname.png`来生成`.png`格式的图像。
 
+或者，可以运行python脚本generate_graph.py来自动生成图像。
 
 ## 程序结构
 ```
@@ -66,7 +72,7 @@ parse部分参考了[这篇文章](http://www.cs.sfu.ca/~cameron/Teaching/384/99
 - DFA在dfa.h和dfa.cc中实现。
 - Regex的parser在parser.h和parser.cc中实现
 
-另外，`test/`中包含了对各个部分的测试。
+另外，`./test.cc`中包含了对各个部分的测试。
 
 
 ## 示例
@@ -91,41 +97,7 @@ match!
     Nfa *nfa = parser.ParseToNfa("a|b|c*");
     graph_generator::GenerateGraph("example", nfa);
 ```
-生成的`.dot`文件：
-```
-ccat graphs/example_nfa.dot
-digraph example {
-    shape0 [label="0", shape=circle];
-    shape1 [label="1", shape=circle];
-    shape2 [label="2", shape=circle];
-    shape3 [label="3", shape=circle];
-    shape4 [label="4", shape=circle];
-    shape5 [label="5", shape=doublecircle];
-    shape6 [label="6", shape=circle];
-    shape7 [label="7", shape=circle];
-    shape8 [label="8", shape=circle];
-    shape9 [label="9", shape=circle];
-    shape10 [label="10", shape=circle];
-    shape11 [label="11", shape=circle];
 
-
-    shape0 -> shape1 [label="ϵ"]
-    shape0 -> shape8 [label="ϵ"]
-    shape1 -> shape2 [label="ϵ"]
-    shape1 -> shape6 [label="ϵ"]
-    shape2 -> shape3 [label="a"]
-    shape3 -> shape4 [label="ϵ"]
-    shape4 -> shape5 [label="ϵ"]
-    shape6 -> shape7 [label="b"]
-    shape7 -> shape4 [label="ϵ"]
-    shape8 -> shape9 [label="ϵ"]
-    shape8 -> shape11 [label="ϵ"]
-    shape9 -> shape10 [label="c"]
-    shape10 -> shape9 [label="ϵ"]
-    shape10 -> shape11 [label="ϵ"]
-    shape11 -> shape5 [label="ϵ"]
-}
-```
 然后在shell中使用GraphViz工具：
 ```
  dot graphs/example.dot -Tpng -o graphs/example_nfa.png

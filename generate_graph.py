@@ -8,7 +8,7 @@ def get_filenames():
 def main():
     filenames = get_filenames()
     for each in filenames:
-        os.system('dot graphs/' + each + ' -T png -o graphs/' + each[0:-4] + '.png')
+        os.system('dot graphs/{} -T png -o graphs/{}.png'.format(each, each[0:-4]))
     os.system('rm -rf graphs/*.dot')
 
 main()

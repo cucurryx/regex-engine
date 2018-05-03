@@ -3,204 +3,202 @@
 //
 
 #include <functional>
+#include <gtest/gtest.h>
 
 #include "regex_parser.h"
-#include "dfa.h"
 
-#define TEST_PASSED(info) printf("TEST:  %s\n", info);
+#define STRING_MATCH(str) do {\
+        RegexParser parser;\
+        stringstream regex_stream(str);\
+        auto comp = parser.ParseSetItems(regex_stream);\
+        Nfa *nfa = new Nfa(comp);\
+        ASSERT_TRUE(nfa->match(str));\
+    } while (0);
 
-
-void TestParseSetItem() {
+TEST(TestParseSetItem, HandleSingleInput) {
     RegexParser parser;
-    stringstream regex_stream1("a");
-    stringstream regex_stream2("a-z");
-    auto comp1 = parser.ParseSetItems(regex_stream1);
-    auto comp2 = parser.ParseSetItems(regex_stream2);
-
-    Nfa *nfa1 = new Nfa(comp1);
-    assert(nfa1 -> match("a"));
-    TEST_PASSED("ParseSetItem <char> succeed");
-
-    Nfa *nfa2 = new Nfa(comp2);
-    for (auto c = 'a'; c <= 'z'; ++c) {
-        assert(nfa2 -> match(string(1, c)));
-    }
-
-    // printf("%s", nfa2 -> to_string().c_str()); // for debug
-    TEST_PASSED("ParseSetItem <range> succeed");
+    stringstream regex_stream("a");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("a"));
 }
 
-void TestParseSetItems() {
+TEST(TestParseSetItem, HandleMultipleInput) {
     RegexParser parser;
-    stringstream regex_stream1("a");
-    stringstream regex_stream2("abcdefghijklmnopqrst");
-    auto comp1 = parser.ParseSetItems(regex_stream1);
-    auto comp2 = parser.ParseSetItems(regex_stream2);
+    stringstream regex_stream("a-z");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    for (auto c = 'a'; c <= 'z'; ++c) {
+        ASSERT_TRUE(nfa->match(string(1, c)));
+    }
+}
 
-    Nfa *nfa1 = new Nfa(comp1);
-    assert(nfa1 -> match("a"));
-    TEST_PASSED("ParseSetItems  <set-item> succeed");
+TEST(TestParseSetItems, HandleSimpleInput) {
+    RegexParser parser;
+    stringstream regex_stream("a");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("a"));
+}
 
-    Nfa *nfa2 = new Nfa(comp2);
+TEST(TestParseSetItems, HandleMultipleInput) {
+    RegexParser parser;
+    stringstream regex_stream("abcdefghijklmnopqrst");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
     for (auto c = 'a'; c <= 't'; ++c) {
-        assert(nfa2 -> match(string(1, c)));
+        ASSERT_TRUE(nfa->match(string(1, c)));
     }
-
-    // printf("%s", nfa2 -> to_string().c_str()); // for debug
-    TEST_PASSED("ParseSetItems <set-item> <set-items> succeed");
 }
 
-void TestParsePositiveSet() {
+TEST(TestParsePositiveSet, HandleRangeInput) {
     RegexParser parser;
-    stringstream regex_stream1("[a-z]");
-    stringstream regex_stream2("[abcde]");
-    auto comp1 = parser.ParseSetItems(regex_stream1);
-    auto comp2 = parser.ParseSetItems(regex_stream2);
+    stringstream regex_stream("[a-z]");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("a"));
+}
 
-    Nfa *nfa1 = new Nfa(comp1);
-    assert(nfa1 -> match("a"));
-    TEST_PASSED("ParsePositiveSet  <positive-set1> succeed");
-
-    Nfa *nfa2 = new Nfa(comp2);
+TEST(TestParsePositiveSet, HandleAtomInput) {
+    RegexParser parser;
+    stringstream regex_stream("[abcde]");
+    auto comp = parser.ParseSetItems(regex_stream);
+    Nfa *nfa = new Nfa(comp);
     for (auto c = 'a'; c <= 'e'; ++c) {
-        assert(nfa2 -> match(string(1, c)));
+        ASSERT_TRUE(nfa->match(string(1, c)));
     }
-    // printf("%s", nfa2 -> to_string().c_str()); // for debug
-    TEST_PASSED("ParsePositiveSet <positive-set2> succeed");
 }
 
-void TestParseNegativeSet() {
-    // TODO
+TEST(TestParseNegativeSet, HandleRangeInput) {
+    //TODO
 }
 
-void TestParseElementary() {
+TEST(TestParseNegativeSet, HandleAtomInput) {
+    //TODO
+}
+
+TEST(TestParseElementary, HandleParenInput) {
     RegexParser parser;
-    stringstream regex_stream1("([a-z])");
-    stringstream regex_stream2(".");
-    stringstream regex_stream3("");
-    stringstream regex_stream4("a");
-    stringstream regex_stream5("[a-z]");
-
-    auto comp1 = parser.ParseElementary(regex_stream1);
-    auto comp2 = parser.ParseElementary(regex_stream2);
-    auto comp3 = parser.ParseElementary(regex_stream3);
-    auto comp4 = parser.ParseElementary(regex_stream4);
-    auto comp5 = parser.ParseElementary(regex_stream5);
-
-    Nfa *nfa1 = new Nfa(comp1);
+    stringstream regex_stream("([a-z])");
+    auto comp = parser.ParseElementary(regex_stream);
+    Nfa *nfa = new Nfa(comp);
     for (auto c = 'a'; c <= 'z'; ++c) {
-        assert(nfa1 -> match(string(1, c)));
+        ASSERT_TRUE(nfa->match(string(1, c)));
     }
-    TEST_PASSED("ParseElementory <group> succeed");
+}
 
-    Nfa *nfa2 = new Nfa(comp2);
-    // puts(nfa2 -> to_string().c_str());
+TEST(TestParseElementary, HandleDotInput) {
+    RegexParser parser;
+    stringstream regex_stream(".");
+    auto comp = parser.ParseElementary(regex_stream);
+    Nfa *nfa = new Nfa(comp);
     for (auto c = '!'; c <= ']'; ++c) {
-        assert(nfa2 -> match(string(1, char(c))));
+        ASSERT_TRUE(nfa->match(string(1, c)));
     }
-    TEST_PASSED("ParseElementory <any> succeed");
-
-    assert(comp3 == nullptr);
-    TEST_PASSED("ParseElementory <eos> succeed");
-
-    Nfa *nfa4 = new Nfa(comp4);
-    assert(nfa2 -> match("a"));
-    TEST_PASSED("ParseElementory <char> succeed");
-
-    Nfa *nfa5 = new Nfa(comp5);
-    for (auto c = 'a'; c <= 'z'; ++c) {
-        assert(nfa2 -> match(string(1, c)));
-    }
-    TEST_PASSED("ParseElementory <set> succeed");
 }
 
-
-void TestParseBasic() {
+TEST(TestParseElementary, HandleEmptyInput) {
     RegexParser parser;
-    stringstream regex_stream1("([a-z])");
-    stringstream regex_stream2(".*");
-    stringstream regex_stream3("[abc]+");
-
-    auto comp1 = parser.ParseBasicRegex(regex_stream1);
-    auto comp2 = parser.ParseBasicRegex(regex_stream2);
-    auto comp3 = parser.ParseBasicRegex(regex_stream3);
-
-    Nfa *nfa1 = new Nfa(comp1);
-    for (auto c = 'a'; c <= 'z'; ++c) {
-        assert(nfa1 -> match(string(1, c)));
-    }
-    TEST_PASSED("ParseBasic <elementory-re> succeed");
-
-    Nfa *nfa2 = new Nfa(comp2);
-    assert(nfa2 -> match("fuck you"));
-    TEST_PASSED("ParseBasic <elementory-re>* succeed");
-
-    Nfa *nfa3 = new Nfa(comp3);
-    assert(!nfa3 -> match(""));
-    assert(nfa3 -> match("aabccaa"));
-    TEST_PASSED("ParseBasic <elementory-re>+ succeed");
+    stringstream regex_stream("");
+    auto comp = parser.ParseElementary(regex_stream);
+    ASSERT_TRUE(comp == nullptr);
 }
 
-void TestParseSimpleRegex() {
+TEST(TestParseElementary, HandleCharacterInput) {
     RegexParser parser;
-    stringstream regex_stream1("([a-z])xxxxx");
-    stringstream regex_stream2("[0-9]+(.*)you");
-
-    auto comp1 = parser.ParseSimpleRegex(regex_stream1);
-    auto comp2 = parser.ParseSimpleRegex(regex_stream2);
-
-    Nfa *nfa1 = new Nfa(comp1);
-    //  puts(nfa1 -> to_string().c_str());
-    for (auto c = 'a'; c <= 'z'; ++c) {
-        assert(nfa1 -> match(string(1, c) + "xxxxx"));
-    }
-    TEST_PASSED("ParseSimpleRegex <basic-RE> succeed");
-
-    Nfa *nfa2 = new Nfa(comp2);
-    assert(nfa2 -> match("211fuck you"));
-    TEST_PASSED("ParseSimpleRegex <basic-RE><simple-RE> succeed");
+    stringstream regex_stream("a");
+    auto comp = parser.ParseElementary(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("a"));
 }
 
-void TestParseRegex() {
+TEST(TestParseElementary, HandleRangeInput) {
     RegexParser parser;
-    stringstream regex_stream1("(.*)(cc|h|cpp)");
-    stringstream regex_stream2("(.*)you\\*");
-    stringstream regex_stream3("bool [a-z]+( )*=( )*((true)|(false))");
-
-    auto comp1 = parser.ParseSimpleRegex(regex_stream1);
-    auto comp2 = parser.ParseSimpleRegex(regex_stream2);
-    auto comp3 = parser.ParseSimpleRegex(regex_stream3);
-
-    Nfa *nfa1 = new Nfa(comp1);
-    //   puts(nfa1 -> to_string().c_str());
-    assert(nfa1 -> match("hello.cc"));
-    assert(nfa1 -> match("test.h"));
-    TEST_PASSED("ParseRegex <simple-RE> \"|\" <simple-RE> succeed");
-
-    Nfa *nfa2 = new Nfa(comp2);
-    assert(nfa2 -> match("is you*"));
-    TEST_PASSED("ParseRegex <SimpleRegex> succeed");
-
-    Nfa *nfa3 = new Nfa(comp3);
-
-    assert(nfa3 -> match("bool x = true"));
-    TEST_PASSED("ParseRegex <SimpleRegex> succeed");
+    stringstream regex_stream("[a-z]");
+    auto comp = parser.ParseElementary(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    for (auto c = 'a'; c <= 'z'; ++c) {
+        ASSERT_TRUE(nfa->match(string(1, c)));
+    }
 }
 
-void TestParseEscape() {
-    // TODO
+TEST(TestParseBasic, HandleParenInput) {
+    RegexParser parser;
+    stringstream regex_stream("([a-z])");
+    auto comp = parser.ParseBasicRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    for (auto c = 'a'; c <= 'z'; ++c) {
+        ASSERT_TRUE(nfa->match(string(1, c)));
+    }
 }
 
-/*
-int main() {
-    TestParseSetItem();
-    TestParseSetItems();
-    TestParsePositiveSet();
-    TestParseNegativeSet();
-    TestParseElementary();
-    TestParseBasic();
-    TestParseSimpleRegex();
-    TestParseRegex();
-    TestParseEscape();
+TEST(TestParseBasic, HandleDotStarInput) {
+    RegexParser parser;
+    stringstream regex_stream(".*");
+    auto comp = parser.ParseBasicRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("hello world"));
 }
-*/
+
+TEST(TestParseBasic, HandlePlusInput) {
+    RegexParser parser;
+    stringstream regex_stream("[abc]+");
+    auto comp = parser.ParseBasicRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_FALSE(nfa->match(""));
+    ASSERT_TRUE(nfa->match("aabccaa"));
+}
+
+TEST(TestParseSimpleRegex, HandleComplextInputOne) {
+    RegexParser parser;
+    stringstream regex_stream("([a-z])xxxxx");
+    auto comp = parser.ParseSimpleRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    for (auto c = 'a'; c <= 'z'; ++c) {
+        ASSERT_TRUE(nfa->match(string(1, c) + "xxxxx"));
+    }
+}
+
+TEST(TestParseSimpleRegex, HandleComplexInputOne) {
+    RegexParser parser;
+    stringstream regex_stream("[0-9]+(.*)you");
+    auto comp = parser.ParseSimpleRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("211lscin293 you"));
+}
+
+TEST(TestParseRegex, HandleComplexInputOne) {
+    RegexParser parser;
+    stringstream regex_stream("(.*)(cc|h|cpp)");
+    auto comp = parser.ParseSimpleRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("hello.cc"));
+    ASSERT_TRUE(nfa->match("test.h"));
+}
+
+TEST(TestParseRegex, HandleComplexInputTwo) {
+    RegexParser parser;
+    stringstream regex_stream("(.*)you\\*");
+    auto comp = parser.ParseSimpleRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("is you*"));
+}
+
+TEST(TestParseRegex, HandleComplexInputThree) {
+    RegexParser parser;
+    stringstream regex_stream("bool [a-z]+( )*=( )*((true)|(false))");
+    auto comp = parser.ParseSimpleRegex(regex_stream);
+    Nfa *nfa = new Nfa(comp);
+    ASSERT_TRUE(nfa->match("bool x = true"));
+}
+
+TEST(TestParseEscape, Handle) {
+    //TODO
+}
+
+#if 1
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+#endif

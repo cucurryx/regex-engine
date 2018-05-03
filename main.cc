@@ -5,8 +5,6 @@
  *************************************************************************************************/
 
 #include <iostream>
-#include <cassert>
-#include <cstdlib>
 
 #include "nfa.h"
 #include "dfa.h"
